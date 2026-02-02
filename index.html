@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkVerse - Free URL Shortener</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .google-btn {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        .google-btn:hover {
+            background: #f8f9fa;
+            border-color: #4285F4;
+        }
+        
+        .google-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .features {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        
+        .feature-icon {
+            margin-right: 10px;
+            color: #4CAF50;
+            font-size: 1.2rem;
+        }
+        
+        .loading {
+            display: none;
+            color: #666;
+            margin-top: 20px;
+        }
+        
+        .user-info {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+        
+        .dashboard-btn {
+            background: linear-gradient(to right, #00b09b, #96c93d);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🔗</div>
+        <h1>LinkVerse</h1>
+        <p class="subtitle">Free URL Shortener with High CPM Earnings</p>
+        
+        <button class="google-btn" id="googleLoginBtn">
+            <img src="https://img.icons8.com/color/48/000000/google-logo.png" class="google-icon" alt="Google">
+            Continue with Google
+        </button>
+        
+        <div class="loading" id="loading">Logging in...</div>
+        
+        <div class="user-info" id="userInfo">
+            <img id="userAvatar" class="user-avatar" src="" alt="User Avatar">
+            <h3 id="userName">User Name</h3>
+            <p id="userEmail">user@example.com</p>
+            <button class="dashboard-btn" onclick="goToDashboard()">Go to Dashboard</button>
+            <button onclick="logout()" style="margin-top: 10px; background: transparent; border: none; color: #666; cursor: pointer;">
+                Logout
+            </button>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">✓</span>
+                <span>Free URL Shortening</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✓</span>
+                <span>High CPM Earnings ($10 for USA)</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✓</span>
+                <span>Real-time Analytics</span>
+            </div>
+            <div class="feature">
+                <span class="feature-icon">✓</span>
+                <span>Instant Withdrawals</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Firebase Configuration - YOU MUST REPLACE WITH YOUR OWN
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY_HERE",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+        
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        
+        // Google Login Function
+        document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            
+            try {
+                const result = await auth.signInWithPopup(provider);
+                const user = result.user;
+                
+                // Hide login button, show user info
+                document.getElementById('googleLoginBtn').style.display = 'none';
+                document.getElementById('loading').style.display = 'none';
+                
+                // Show user info
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('userAvatar').src = user.photoURL;
+                document.getElementById('userName').textContent = user.displayName;
+                document.getElementById('userEmail').textContent = user.email;
+                
+                // Save user info to localStorage
+                localStorage.setItem('user', JSON.stringify({
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                }));
+                
+                console.log("Login successful:", user);
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                alert("Login failed: " + error.message);
+                console.error("Login error:", error);
+            }
+        });
+        
+        // Check if user is already logged in
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in
+                document.getElementById('googleLoginBtn').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('userAvatar').src = user.photoURL;
+                document.getElementById('userName').textContent = user.displayName;
+                document.getElementById('userEmail').textContent = user.email;
+                
+                // Save to localStorage
+                localStorage.setItem('user', JSON.stringify({
+                    uid: user.uid,
+                    name: user.displayName,
+                    email: user.email,
+                    photoURL: user.photoURL
+                }));
+            }
+        });
+        
+        // Go to Dashboard
+        function goToDashboard() {
+            window.location.href = "dashboard.html";
+        }
+        
+        // Logout Function
+        function logout() {
+            auth.signOut().then(() => {
+                localStorage.removeItem('user');
+                document.getElementById('userInfo').style.display = 'none';
+                document.getElementById('googleLoginBtn').style.display = 'flex';
+                alert("Logged out successfully!");
+            }).catch((error) => {
+                alert("Logout error: " + error.message);
+            });
+        }
+        
+        // Check if user data exists in localStorage on page load
+        window.onload = function() {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                const user = JSON.parse(savedUser);
+                document.getElementById('googleLoginBtn').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('userAvatar').src = user.photoURL;
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userEmail').textContent = user.email;
+            }
+        };
+    </script>
+</body>
+</html>
