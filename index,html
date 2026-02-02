@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkVerse - URL Shortener</title>
+    <style>
+        body { font-family: Arial; text-align: center; padding: 50px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .btn { background: blue; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 LinkVerse URL Shortener</h1>
+        <p>Shorten URLs and earn money with high CPM!</p>
+        <button class="btn" onclick="loginWithGoogle()">Continue with Google</button>
+    </div>
+    
+    <script>
+        function loginWithGoogle() {
+            // Firebase login code will be here
+            alert("Google Login Coming Soon!");
+        }
+    </script>
+</body>
+</html>
